@@ -3,9 +3,9 @@
 // Loading dependencies.
 var Backbone = require('backbone'),
     $ = Backbone.$ = require('jquery'),
-    dataStore = require('../utils/dataStore'),
-    ListView = require('./ListView'),
-    DetailedView = require('./DetailedView');
+    dataStore = require('./utils/dataStore'),
+    ListView = require('./views/ListView'),
+    DetailedView = require('./views/DetailedView');
 
 module.exports = Backbone.View.extend({
 
