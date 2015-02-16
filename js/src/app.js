@@ -5,7 +5,8 @@ var Backbone = require('backbone'),
     $ = Backbone.$ = require('jquery'),
     dataStore = require('./utils/dataStore'),
     ListView = require('./views/ListView'),
-    DetailedView = require('./views/DetailedView');
+    DetailedView = require('./views/DetailedView'),
+    LoaderView = require('./views/LoaderView');
 
 module.exports = Backbone.View.extend({
 
@@ -16,6 +17,10 @@ module.exports = Backbone.View.extend({
     initialize: function() {
         this.listenTo(Backbone.Events, 'changeToDetailed', this.onChangeToDetailed);
         this.listenTo(Backbone.Events, 'changeToList', this.onChangeToList);
+
+        this.loaderView = new LoaderView({
+            el: '.js-avengers-loader'
+        });
     },
 
     onChangeToList: function() {

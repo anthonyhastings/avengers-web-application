@@ -1,0 +1,55 @@
+.avengers-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #124857;
+    opacity: 0;
+    transition: opacity 500ms;
+    pointer-events: none;
+
+    .svg__wrapper {
+        width: 50%;
+        max-width: 300px;
+
+        animation: loader 1500ms linear infinite;
+        animation-play-state: paused;
+    }
+
+    .avengers-loader__path {
+        fill: #FFF;
+    }
+
+    &.show {
+        opacity: 1;
+        pointer-events: auto;
+
+        .svg__wrapper {
+            animation-play-state: running;
+        }
+    }
+}
+
+@keyframes loader {
+    0% {
+        transform: scale(1);
+    }
+
+    33% {
+        transform: scale(1.1);
+    }
+
+    66% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
