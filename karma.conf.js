@@ -34,6 +34,7 @@ if (globalSettings.moduleFormat === 'browserify') {
             watch: false
         },
         files: [
+            'js/tests/_shims.js',
             'js/tests/**/*.spec.js'
         ]
     };
