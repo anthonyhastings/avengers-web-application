@@ -13,6 +13,9 @@ var app = express(),
 // The port which this script will listen to.
 var apiPort = 4000;
 
+// Anti XSSI (Cross-site script inclusion) string.
+var xssiString = ')]}\',';
+
 // Application parses request bodies: application/json, application/x-www-form-urlencoded, and multipart/form-data.
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -33,7 +36,8 @@ router.get('/avengers', function(request, response) {
     });
 
     setTimeout(function() {
-        response.json(returnData);
+        response.type('application/json');
+        response.send(xssiString + JSON.stringify(returnData));
     }, 3000);
 });
 
@@ -42,7 +46,8 @@ router.get('/avengers/:id', function(request, response) {
     var individualRecord = _.findWhere(data, { id: request.params.id });
 
     setTimeout(function() {
-        response.json(individualRecord);
+        response.type('application/json');
+        response.send(xssiString + JSON.stringify(individualRecord));
     }, 3000);
 });
 
