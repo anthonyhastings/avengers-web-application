@@ -2,28 +2,29 @@
 var Backbone = require('backbone'),
     $ = Backbone.$ = require('jquery'),
     AvengersCollection = require('../../src/collections/AvengersCollection'),
-    AvengersModel = require('../../src/models/AvengersModel');
+    AvengersModel = require('../../src/models/AvengersModel'),
+    rawData = require('../../../api/data');
 
 describe('The avengers collection', function() {
 
     beforeEach(function() {
+        this.collection = new AvengersCollection(rawData);
     });
 
     afterEach(function() {
+        this.collection = null;
     });
 
     it('should use avengers model', function() {
-        var dummyCollection = new AvengersCollection([{ id: 'hulk', alias: 'Hulk' }]),
-            dummyModel = dummyCollection.at(0),
-            instanceOfAvengersModel = dummyModel instanceof AvengersModel;
-
-        expect(instanceOfAvengersModel).to.be.true;
+        expect(this.collection.at(0)).to.be.instanceof(AvengersModel);
     });
 
     it('should have an api endpoint', function() {
+        expect(this.collection.url).to.exist;
+        expect(this.collection.url.length).to.be.above(0);
     });
 
-    it('should parse response and create valid JSON', function() {
+    it('should have parse response called', function() {
     });
 
 });
