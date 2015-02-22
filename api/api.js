@@ -20,9 +20,10 @@ var xssiString = ')]}\',';
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Handler for all requests.
-router.use(function(req, res, next) {
-    console.log('Request:', 'GET', req.originalUrl);
+// Handler for all requests. Responses are given CORS headers.
+router.use(function(request, response, next) {
+    console.log('Request:', 'GET', request.originalUrl);
+    response.header('Access-Control-Allow-Origin', '*');
     next();
 });
 
