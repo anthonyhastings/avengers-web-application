@@ -11,7 +11,12 @@ if (document.readyState === 'complete' || document.readyState === 'loaded' || do
     window.addEventListener('DOMContentLoaded', onDOMContentLoaded);
 }
 
+/**
+ *  Starts the application by instantiating our applications
+ *  controller and triggering an event to take us to the
+ *  starting view.
+ */
 function onDOMContentLoaded() {
-    var app = new AppView();
+    new AppView();
     Backbone.Events.trigger('changeToList');
 }

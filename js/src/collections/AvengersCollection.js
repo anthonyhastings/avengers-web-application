@@ -6,8 +6,10 @@ var Backbone = require('backbone'),
 
 module.exports = Backbone.Collection.extend({
 
+    // What "blueprint" any objects passed in should be converted into.
     model: AvengersModel,
 
+    // URL to fetch data from. Also used by models to create their endpoint.
     url: 'http://localhost:4000/api/avengers',
 
     /**
@@ -35,7 +37,7 @@ module.exports = Backbone.Collection.extend({
      */
     parse: function(response) {
         if (typeof(response) === 'string') {
-            response = response.replace(")]}',", '');
+            response = response.replace(')]}\',', '');
         }
 
         return JSON.parse(response);
