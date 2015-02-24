@@ -9,10 +9,12 @@ describe('The avengers collection', function() {
 
     beforeEach(function() {
         this.collection = new AvengersCollection(rawData);
+        this.sandbox = new sinon.sandbox.create();
     });
 
     afterEach(function() {
         this.collection = null;
+        this.sandbox.restore();
     });
 
     it('should use avengers model', function() {
@@ -22,10 +24,11 @@ describe('The avengers collection', function() {
     it('should have an api endpoint', function() {
         expect(this.collection.url).to.exist;
         expect(this.collection.url.length).to.be.above(0);
+        expect(this.collection.url).to.have.string('/api');
     });
 
     it('should override sync and set a specific dataType', function() {
-        var syncSpy = new sinon.spy(this.collection, 'sync');
+        var syncSpy = this.sandbox.spy(this.collection, 'sync');
 
         this.collection.fetch();
 
@@ -49,13 +52,20 @@ describe('The avengers collection', function() {
     // By specifying a `done` callback, Mocha realises it needs to wait
     // for it to be called in order for the test to be successful.
     it('should fetch data correctly', function(done) {
-        var self = this;
+        var self = this,
+            fakeServer = this.sandbox.useFakeServer();
 
-        this.timeout(4000);
+        fakeServer.autoRespond = true;
+        fakeServer.respondWith('GET', 'http://localhost:4000/api/avengers', [
+            200,
+            { 'Content-Type': 'application/json; charset=utf-8' },
+            ')]}\',[{"id":"thor","alias":"Thor"}]'
+        ]);
 
         this.collection.fetch({
             success: function() {
                 if (self.collection.length > 0) {
+                    expect(self.collection.length).to.equal(1);
                     done();
                 } else {
                     done(new Error());
