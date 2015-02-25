@@ -39,7 +39,7 @@
         "gulp-imagemin": "^2.2.1",
         "gulp-handlebars": "^3.0.1",
         "requirejs": "^2.1.16",
-        "browserify": "^6.3.3",
+        "browserify": "^9.0.3",
         "gulp-extract-sourcemap": "^0.1.1",
         "gulp-filter": "^2.0.2",
         "gulp-uglifyjs": "^0.6.0",
