@@ -44,6 +44,17 @@ module.exports = Backbone.View.extend({
     },
 
     /**
+     *  A common pattern function that wraps the standard remove method
+     *  of a view, so any custom logic such as app-wide event listeners
+     *  or sub-views can be manually cleaned up.
+     *
+     *  @return {object} - Reference to this view.
+     */
+    dispose: function() {
+        return this.remove();
+    },
+
+    /**
      *  Whenever you click one of the avenger rows in the list
      *  we trigger an event that will show that avenger in detail.
      *

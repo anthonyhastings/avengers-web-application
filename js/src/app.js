@@ -131,7 +131,7 @@ module.exports = Backbone.View.extend({
 
         $.when(oldViewHidden).then(function() {
             if (self.currentView) {
-                self.currentView.remove();
+                self.currentView.dispose();
                 self.currentView = null;
             }
 
