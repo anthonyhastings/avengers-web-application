@@ -32,7 +32,7 @@ router.get('/avengers', function(request, response) {
     var returnData = [];
 
     data.forEach(function(record) {
-        var subsetRecord = _.pick(record, 'id', 'alias');
+        var subsetRecord = _.pick(record, 'id', 'alias', 'gender');
         returnData.push(subsetRecord);
     });
 
