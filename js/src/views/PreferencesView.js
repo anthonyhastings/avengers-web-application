@@ -10,7 +10,8 @@ module.exports = Backbone.View.extend({
     // Delegated DOM events that should be bound to the view.
     events: {
         'change .js-filter': 'onFilterChanged',
-        'change .js-order-by': 'onOrderChanged'
+        'change .js-order-by': 'onOrderChanged',
+        'click .js-toggle': 'onToggleClick'
     },
 
     // Template function that can be called during render.
@@ -26,8 +27,21 @@ module.exports = Backbone.View.extend({
     render: function() {
         var rawHTML = this.template(this.model.toJSON());
         this.$el.html(rawHTML);
+        this.setPanelState();
 
         return this;
+    },
+
+    /**
+     *  Examines the model state and updates the toggle class
+     *  accordingly.
+     */
+    setPanelState: function() {
+        if (this.model.get('panelOpen')) {
+            this.$el.addClass('is-open');
+        } else {
+            this.$el.removeClass('is-open');
+        }
     },
 
     /**
@@ -78,6 +92,15 @@ module.exports = Backbone.View.extend({
             optionValue = $chosenOption.val();
 
         this.model.set('orderSelected', optionValue);
+    },
+
+    /**
+     *  Upon clicking the toggle button we update the panel state within
+     *  the model, then re-trigger the logic to toggle the panel class.
+     */
+    onToggleClick: function() {
+        this.model.set('panelOpen', !this.model.get('panelOpen'));
+        this.setPanelState();
     }
 
 });

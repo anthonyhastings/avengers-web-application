@@ -84,9 +84,48 @@ li {
 .avengers__preferences-panel {
     position: absolute;
     top: 0;
-    left: 0;
-    background: #333;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    transition: transform 500ms;
+
+    &.is-open {
+        transform: translateX(-50%) translateY(0%);
+    }
+
+    box-sizing: border-box;
+    max-width: 350px;
     padding: 20px;
+    width: 100%;
+
+    background: #124857;
+    border-radius: 0 0 6px 6px;
+
+    .toggle {
+        display: block;
+
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%);
+
+        background: #124857;
+        border-radius: 0 0 5px 5px;
+        height: 30px;
+        width: 30px;
+
+        color: #FFF;
+        cursor: pointer;
+        font-family: Arial;
+        font-weight: bold;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+
+        span {
+            display: block;
+            transform: translateX(-2px) rotate(90deg);
+        }
+    }
 }
 
 .avengers-single {

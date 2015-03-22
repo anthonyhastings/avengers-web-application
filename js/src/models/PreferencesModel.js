@@ -13,6 +13,8 @@ module.exports = Backbone.Model.extend({
      */
     defaults: function() {
         return {
+            panelOpen: false,
+
             orderSelected: 'id',
             orderOptions: ['id', 'alias', 'gender'],
 
