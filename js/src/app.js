@@ -8,6 +8,9 @@ var Backbone = require('backbone'),
     DetailedView = require('./views/DetailedView'),
     LoaderView = require('./views/LoaderView');
 
+// Load Handlebars helpers file to associate them to Handlebars namespace.
+require('./utils/handlebars-helpers');
+
 module.exports = Backbone.View.extend({
 
     // Point to an existing DOM element rather than creating one.
