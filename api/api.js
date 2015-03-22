@@ -32,7 +32,7 @@ router.get('/avengers', function(request, response) {
     var returnData = [];
 
     data.forEach(function(record) {
-        var subsetRecord = _.pick(record, 'id', 'alias', 'gender');
+        var subsetRecord = _.pick(record, 'id', 'slug', 'alias', 'gender');
         returnData.push(subsetRecord);
     });
 
@@ -43,8 +43,8 @@ router.get('/avengers', function(request, response) {
 });
 
 // Route: Model endpoint returning an individual record.
-router.get('/avengers/:id', function(request, response) {
-    var individualRecord = _.findWhere(data, { id: request.params.id });
+router.get('/avengers/:slug', function(request, response) {
+    var individualRecord = _.findWhere(data, { slug: request.params.slug });
 
     setTimeout(function() {
         response.type('application/json');
