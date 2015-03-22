@@ -80,7 +80,6 @@ li {
     }
 }
 
-// TODO: FINISH STYLING.
 .avengers__preferences-panel {
     position: absolute;
     top: 0;
@@ -99,6 +98,21 @@ li {
 
     background: #124857;
     border-radius: 0 0 6px 6px;
+    backface-visibility: hidden;
+    display: flex;
+    font-family: Arial;
+    font-size: 13px;
+
+    .form-element {
+        width: 50%;
+
+        label {
+            color: #FFF;
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    }
 
     .toggle {
         display: block;

@@ -1,20 +1,24 @@
 {{!-- Cycle each filter and then each value possible for that filter and output them. --}}
 {{#each filterOptions}}
-    <label for="{{{@key}}}-toggle">Filter {{{@key}}}:</label>
-    <select id="{{{@key}}}-toggle" class="dropdown filter js-filter" data-filter-key="{{{@key}}}">
-        {{#each this}}
-            <option value="{{{this}}}" {{ isFilterSelected filtersSelected=../../filtersSelected filterKey=@../key filterValue=this }}>{{{this}}}</option>
-        {{/each}}
-    </select>
+    <div class="form-element">
+        <label for="{{{@key}}}-toggle">Filter {{{@key}}}:</label>
+        <select id="{{{@key}}}-toggle" class="dropdown filter js-filter" data-filter-key="{{{@key}}}">
+            {{#each this}}
+                <option value="{{{this}}}" {{ isFilterSelected filtersSelected=../../filtersSelected filterKey=@../key filterValue=this }}>{{{this}}}</option>
+            {{/each}}
+        </select>
+    </div>
 {{/each}}
 
 {{!-- Cycle each potential order option, ensuring that the current choice is give selected attribute. --}}
-<label for="order-by">Order By:</label>
-<select id="order-by" class="dropdown order-by js-order-by">
-    {{#each orderOptions}}
-        <option value="{{{this}}}" {{#compare this ../orderSelected}}selected{{/compare}}>{{{this}}}</option>
-    {{/each}}
-</select>
+<div class="form-element">
+    <label for="order-by">Order By:</label>
+    <select id="order-by" class="dropdown order-by js-order-by">
+        {{#each orderOptions}}
+            <option value="{{{this}}}" {{#compare this ../orderSelected}}selected{{/compare}}>{{{this}}}</option>
+        {{/each}}
+    </select>
+</div>
 
 <div class="toggle js-toggle">
     <span>&gt;</span>
