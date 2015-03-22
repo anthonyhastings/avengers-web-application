@@ -1,5 +1,9 @@
-{{#each this}}
-    <li class="avengers__person js-avenger-row" style="background-image: url('{{{image}}}');" data-model-id="{{{id}}}">
-        <span class="avengers__name">{{{alias}}}</span>
-    </li>
-{{/each}}
+<ul class="avengers__list">
+    {{#each this}}
+        <li class="avengers__person js-avenger-row" style="background-image: url('{{{image}}}');" data-model-id="{{{id}}}">
+            <span class="avengers__name">{{{alias}}}</span>
+        </li>
+    {{/each}}
+</ul>
+
+<div class="avengers__preferences-panel js-preferences-panel"></div>

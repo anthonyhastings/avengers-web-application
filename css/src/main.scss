@@ -27,14 +27,14 @@ li {
     padding: 0;
 }
 
-.avengers__container {
+.avengers__wrapper,
+.avengers__listContainer,
+.avengers__list {
     height: 100%;
+    width: 100%;
 }
 
 .avengers__list {
-    width: 100%;
-    height: 100%;
-
     display: flex;
     flex-direction: column;
 
@@ -78,6 +78,15 @@ li {
             }
         }
     }
+}
+
+// TODO: FINISH STYLING.
+.avengers__preferences-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #333;
+    padding: 20px;
 }
 
 .avengers-single {
