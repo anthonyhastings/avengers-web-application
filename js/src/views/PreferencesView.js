@@ -2,13 +2,15 @@
 
 // Loading dependencies.
 var Backbone = require('backbone'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    _ = require('underscore');
 
 module.exports = Backbone.View.extend({
 
     // Delegated DOM events that should be bound to the view.
     events: {
-        'change .js-filter': 'onFilterChanged'
+        'change .js-filter': 'onFilterChanged',
+        'change .js-order-by': 'onOrderChanged'
     },
 
     // Template function that can be called during render.
@@ -19,10 +21,15 @@ module.exports = Backbone.View.extend({
      *  collection into the template. This markup is then injected into
      *  the views DOM element.
      *
+     *  TODO: NEED TO MAKE AN "isFilterSelected" handlebars helper, passing the filter key, and the value i'm checking... REMEMBER FOR THE FILTER THAT IF THE KEY DOESN'T EXIST, AND THE COMPARISON VALUE WAS A BLANK STRING, THATS TRUE!
+     *  TODO: NEED TO MAKE AN "isFilterSelected" handlebars helper, passing the filter key, and the value i'm checking... REMEMBER FOR THE FILTER THAT IF THE KEY DOESN'T EXIST, AND THE COMPARISON VALUE WAS A BLANK STRING, THATS TRUE!
+     *  TODO: NEED TO MAKE AN "isFilterSelected" handlebars helper, passing the filter key, and the value i'm checking... REMEMBER FOR THE FILTER THAT IF THE KEY DOESN'T EXIST, AND THE COMPARISON VALUE WAS A BLANK STRING, THATS TRUE!
+     *
      *  @return {object} - Reference to this view.
      */
     render: function() {
-        var rawHTML = this.template();
+console.info(this.model.toJSON());
+        var rawHTML = this.template(this.model.toJSON());
         this.$el.html(rawHTML);
 
         return this;
@@ -40,11 +47,14 @@ module.exports = Backbone.View.extend({
     },
 
     /**
-     *  TODO: IF A BLANK FILTER IS SET, REMOVE THE KEY.
-     *  TODO: STUFF NEEDS PASSED TO TEMPLATE SO WHEN RENDERING, SELECT BOXES MATCH THE CHOICES IN PREFERENCES MODEL.
+     *  Whenever a filter changes, we determine the new filter key and the
+     *  new value then update a cloned filters object accordingly. This
+     *  filters object is then set back onto the model.
+     *
+     *  @param {object} event - DOM event.
      */
     onFilterChanged: function(event) {
-        var currentFilters = this.model.get('filters'),
+        var currentFilters = _.clone(this.model.get('filtersSelected')),
             $selectBox = $(event.currentTarget),
             $chosenOption = $selectBox.find(':selected'),
             optionValue = $chosenOption.val(),
@@ -57,6 +67,22 @@ module.exports = Backbone.View.extend({
         } else {
             currentFilters[filterKey] = optionValue;
         }
+
+        this.model.set('filtersSelected', currentFilters);
+    },
+
+    /**
+     *  Upon choosing a new field to order by, we update the the
+     *  preferences model accordingly.
+     *
+     *  @param {object} event - DOM event.
+     */
+    onOrderChanged: function(event) {
+        var $selectBox = $(event.currentTarget),
+            $chosenOption = $selectBox.find(':selected'),
+            optionValue = $chosenOption.val();
+
+        this.model.set('orderSelected', optionValue);
     }
 
 });
