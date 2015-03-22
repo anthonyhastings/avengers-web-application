@@ -10,7 +10,7 @@ var dataStore = {};
 // Constructing an instance of our collection (but not performing any fetches).
 dataStore.avengers = new AvengersCollection();
 
-// This model preserves the users collection preferences in terms of ordering and filtering.
+// Used to store the users preferences in terms of ordering and filtering of AvengersCollection.
 dataStore.preferences = new PreferencesModel();
 
 module.exports = dataStore;

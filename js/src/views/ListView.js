@@ -2,6 +2,7 @@
 
 // Loading dependencies.
 var Backbone = require('backbone'),
+    $ = require('jquery'),
     dataStore = require('../utils/dataStore'),
     PreferencesView = require('./PreferencesView');
 
@@ -18,34 +19,62 @@ module.exports = Backbone.View.extend({
         'click .js-avenger-row': 'onAvengerClick'
     },
 
-    // Template function that can be called during render.
+    // A template function to output containers for the grid and preferences.
     template: require('../templates/listView.hbs'),
 
+    // Specific template function for outputting an avenger.
+    avengerTemplate: require('../templates/listItem.hbs'),
+
     /**
-     *  ??????????????????????????????????????????????????????????????????????????????????????????.
-     *  ??????????????????????????????????????????????????????????????????????????????????????????.
-     *  ??????????????????????????????????????????????????????????????????????????????????????????.
+     *  Upon initialization we store a reference to the Avengers collection,
+     *  we create a secondary collection (for filtering and ordering) and
+     *  also listen for any preference changes.
      *
      *  @param {object} options - Object has of settings / variables.
      */
     initialize: function(options) {
         this.collection = options.collection;
         this.filteredCollection = new Backbone.Collection();
+        this.listenTo(dataStore.preferences, 'change', this.onPreferencesChanged);
     },
 
     /**
-     *  Creates a string of markup by passing raw data from the avengers
-     *  collection into the template. This markup is then injected into
-     *  the views DOM element.
+     *  Templates out the generic template first which creates empty
+     *  containers for the avengers grid and the preferences panel.
+     *
+     *  After this is done, we trigger sub-logic to instantiate the
+     *  preferences view, and logic to order/filter/render the avengers.
      *
      *  @return {object} - Reference to this view.
      */
     render: function() {
-        var rawHTML = this.template(this.collection.toJSON());
-        this.$el.html(rawHTML);
-
+        this.$el.html(this.template());
+        this.renderCollection();
         this.renderSubViews();
+
         return this;
+    },
+
+    /**
+     *  Requests a filtered down version of the avengers collection which
+     *  we copy into a sub-collection (to preserve the original data).
+     *
+     *  We also order this sub-collection accordingly before templating
+     *  out each model and injecting into the DOM.
+     */
+    renderCollection: function() {
+        var filteredModels = this.collection.getFiltered(dataStore.preferences.get('filtersSelected')),
+            documentFragment = document.createDocumentFragment();
+
+        this.filteredCollection.comparator = dataStore.preferences.get('orderSelected');
+        this.filteredCollection.reset(filteredModels);
+
+        this.filteredCollection.forEach(function(model) {
+            var $avengerElement = $(this.avengerTemplate(model.toJSON()));
+            documentFragment.appendChild($avengerElement[0]);
+        }, this);
+
+        this.$el.find('.js-avengers-list').html(documentFragment);
     },
 
     /**
@@ -74,6 +103,15 @@ module.exports = Backbone.View.extend({
         this.filteredCollection = null;
 
         return this.remove();
+    },
+
+    /**
+     *  Whenever we detect that the preferences model has been changed
+     *  we ask for the collection to re-render.
+     */
+    onPreferencesChanged: function() {
+        console.info('ListView::onPreferencesChanged');
+        this.renderCollection();
     },
 
     /**

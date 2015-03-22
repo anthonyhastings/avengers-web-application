@@ -41,6 +41,24 @@ module.exports = Backbone.Collection.extend({
         }
 
         return JSON.parse(response);
+    },
+
+    /**
+     *  Takes a set of filters and returns a subset of models
+     *  that match the desired filters.
+     *
+     *  @param {object} filters - Object of key/value filter names and values.
+     *  @return {array} - A potentially cut-down set of models.
+     */
+    getFiltered: function(filters) {
+        var hasFilters = false;
+        for (var filter in filters) {
+            if (filters.hasOwnProperty(filter)) {
+                hasFilters = true;
+            }
+        }
+
+        return (hasFilters) ? this.where(filters) : this.models;
     }
 
 });

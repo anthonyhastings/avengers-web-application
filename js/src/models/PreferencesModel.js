@@ -13,8 +13,8 @@ module.exports = Backbone.Model.extend({
      */
     defaults: function() {
         return {
-            orderSelected: '',
-            orderOptions: ['', 'alias', 'gender'],
+            orderSelected: 'id',
+            orderOptions: ['id', 'alias', 'gender'],
 
             filtersSelected: {},
             filterOptions: {
