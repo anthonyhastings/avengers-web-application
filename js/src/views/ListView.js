@@ -84,7 +84,7 @@ module.exports = Backbone.View.extend({
      */
     onAvengerClick: function(event) {
         event.preventDefault();
-        Backbone.Events.trigger('changeToDetailed', event.currentTarget.getAttribute('data-model-id'));
+        Backbone.Events.trigger('changeToDetailed', event.currentTarget.getAttribute('data-model-slug'));
     }
 
 });

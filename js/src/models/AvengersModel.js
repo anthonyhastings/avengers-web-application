@@ -5,6 +5,9 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
 
+    // We use the slug for model lookups rather than the numeric id.
+    idAttribute: 'slug',
+
     // Flag denotes if we have yet done a full fetch on this model.
     hasBeenFetched: false,
 
@@ -41,7 +44,7 @@ module.exports = Backbone.Model.extend({
             response = JSON.parse(response);
         }
 
-        response.image = 'img/' + response.id + '.jpg';
+        response.image = 'img/' + response.slug + '.jpg';
         return response;
     }
 

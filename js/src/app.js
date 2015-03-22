@@ -9,7 +9,7 @@ var Backbone = require('backbone'),
     LoaderView = require('./views/LoaderView');
 
 // Load Handlebars helpers file to associate them to Handlebars namespace.
-require('./utils/handlebars-helpers');
+require('./utils/handlebarsHelpers');
 
 module.exports = Backbone.View.extend({
 
@@ -79,11 +79,11 @@ module.exports = Backbone.View.extend({
      *  applications loader screen). When we definitely have data
      *  in the model we hide the loader and show the avenger.
      *
-     *  @param {string} modelID - Used to look up the model.
+     *  @param {string} modelSlug - Used to look up the model.
      */
-    onChangeToDetailed: function(modelID) {
+    onChangeToDetailed: function(modelSlug) {
         var self = this,
-            relevantModel = dataStore.avengers.get(modelID),
+            relevantModel = dataStore.avengers.get(modelSlug),
             dataFetched = $.Deferred();
 
         if (!relevantModel.hasBeenFetched) {
@@ -106,7 +106,7 @@ module.exports = Backbone.View.extend({
             Backbone.Events.trigger('loader:hide');
 
             var newView = new DetailedView({
-                model: dataStore.avengers.get(modelID)
+                model: dataStore.avengers.get(modelSlug)
             });
 
             self._swapView(newView);
