@@ -17,18 +17,13 @@ module.exports = Backbone.View.extend({
     template: require('../templates/preferencesView.hbs'),
 
     /**
-     *  Creates a string of markup by passing raw data from the avengers
-     *  collection into the template. This markup is then injected into
-     *  the views DOM element.
-     *
-     *  TODO: NEED TO MAKE AN "isFilterSelected" handlebars helper, passing the filter key, and the value i'm checking... REMEMBER FOR THE FILTER THAT IF THE KEY DOESN'T EXIST, AND THE COMPARISON VALUE WAS A BLANK STRING, THATS TRUE!
-     *  TODO: NEED TO MAKE AN "isFilterSelected" handlebars helper, passing the filter key, and the value i'm checking... REMEMBER FOR THE FILTER THAT IF THE KEY DOESN'T EXIST, AND THE COMPARISON VALUE WAS A BLANK STRING, THATS TRUE!
-     *  TODO: NEED TO MAKE AN "isFilterSelected" handlebars helper, passing the filter key, and the value i'm checking... REMEMBER FOR THE FILTER THAT IF THE KEY DOESN'T EXIST, AND THE COMPARISON VALUE WAS A BLANK STRING, THATS TRUE!
+     *  Creates a string of markup by passing raw data from the preferences
+     *  model the template. This markup is then injected into the views
+     *  DOM element.
      *
      *  @return {object} - Reference to this view.
      */
     render: function() {
-console.info(this.model.toJSON());
         var rawHTML = this.template(this.model.toJSON());
         this.$el.html(rawHTML);
 

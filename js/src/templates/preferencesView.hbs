@@ -1,12 +1,14 @@
+{{!-- Cycle each filter and then each value possible for that filter and output them. --}}
 {{#each filterOptions}}
     <label for="{{{@key}}}-toggle">Filter {{{@key}}}:</label>
     <select id="{{{@key}}}-toggle" class="dropdown filter js-filter" data-filter-key="{{{@key}}}">
         {{#each this}}
-            <option value="{{{this}}}">{{{this}}}</option>
+            <option value="{{{this}}}" {{ isFilterSelected filtersSelected=../../filtersSelected filterKey=@../key filterValue=this }}>{{{this}}}</option>
         {{/each}}
     </select>
 {{/each}}
 
+{{!-- Cycle each potential order option, ensuring that the current choice is give selected attribute. --}}
 <label for="order-by">Order By:</label>
 <select id="order-by" class="dropdown order-by js-order-by">
     {{#each orderOptions}}

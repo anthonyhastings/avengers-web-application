@@ -4,6 +4,35 @@
 var Handlebars = require('hbsfy/runtime');
 
 /**
+ *  Examines the current filter and current filter value against what
+ *  filters are actually chosen, and if there's a match we output
+ *  selected attribute.
+ *
+ *  Example Usage:
+ *  {{ isFilterSelected filtersSelected={ gender: "Female" } filterKey="gender" filterValue="Male" }}
+ */
+Handlebars.registerHelper('isFilterSelected', function(options) {
+    var filters = options.hash.filtersSelected,
+        currentFilter = options.hash.filterKey,
+        currentFilterValue = options.hash.filterValue,
+        outputSelected = false;
+
+    if (filters.hasOwnProperty(currentFilter)) {
+        if (filters[currentFilter] === currentFilterValue) {
+            outputSelected = true;
+        }
+    } else {
+        if (currentFilterValue === '') {
+            outputSelected = true;
+        }
+    }
+
+    if (outputSelected) {
+        return new Handlebars.SafeString('selected');
+    }
+});
+
+/**
  *  Comparison helper than can be used with various operators.
  *
  *  Example Usage:
