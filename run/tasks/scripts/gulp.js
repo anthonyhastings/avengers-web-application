@@ -26,49 +26,11 @@ var gulp = require('gulp'),
  *  @param {object} taskDone - Gulp task callback method.
  */
 gulp.task('scripts', function(taskDone) {
+    var promises = [];
 
-
-
-
-
-
-
-
-
-    // Build the vendor bundle.
     if (args.hasOwnProperty('vendors')) {
-        // Apply particular options if global settings dictate source files should be referenced inside sourcemaps.
-        var sourcemapOptions = {};
-        if (globalSettings.sourcemapOptions.type === 'External_ReferencedFiles') {
-            sourcemapOptions.includeContent = false;
-            sourcemapOptions.sourceRoot = globalSettings.sourcemapOptions.sourceRoot;
-        }
-
-        // Creating a browserify instance / stream.
-        var bundleStream = browserify({ debug: true });
-
-        // Cycle each of the vendors and push its file into the bundle.
-        // The library will be exposed to other require calls for this packageID.
-        vendors.forEach(function(packageID) {
-            bundleStream.require(nodeResolve.sync(packageID), { expose: packageID });
-        });
-
-        // Adding source file, uglifying then moving to dest folder.
-        bundleStream
-            .bundle()
-            .pipe(source('vendor' + common.buildFileSuffix))
-            .pipe(buffer())
-            .pipe(sourcemaps.init({ loadMaps: true }))
-            .pipe(uglify(common.uglifySettings))
-            .pipe(sourcemaps.write('./', sourcemapOptions))
-            .pipe(gulp.dest(globalSettings.destPath + common.outputFolder))
-            .on('end', function() {
-                console.log('Browserify Completed: vendor' + common.buildFileSuffix);
-                taskDone();
-            });
+        promises.push(new Promise(_processVendors));
     } else {
-        var promises = [];
-
         for (var index = 0, length = common.bundles.length; index < length; index++) {
             var thisBundle = common.bundles[index],
                 scopedProcessingMethod = _processBundle.bind(thisBundle);
@@ -76,16 +38,16 @@ gulp.task('scripts', function(taskDone) {
             thisBundle.promise = new Promise(scopedProcessingMethod);
             promises.push(thisBundle.promise);
         }
-
-        Promise.all(promises).then(
-            function() {
-                taskDone();
-            },
-            function() {
-                taskDone('Something went wrong.');
-            }
-        );
     }
+
+    Promise.all(promises).then(
+        function() {
+            taskDone();
+        },
+        function() {
+            taskDone('Something went wrong.');
+        }
+    );
 });
 
 /**
@@ -146,6 +108,48 @@ function _processBundle(resolve, reject) {
         .pipe(gulp.dest(globalSettings.destPath + common.outputFolder))
         .on('end', function() {
             console.log('Browserify Completed: ' + self.srcPath + self.fileName + '.js');
+            resolve();
+        });
+}
+
+/**
+ *  Packages vendor libraries into a single bundle.
+ *
+ *  @param {function} resolve - Promise resolution callback.
+ *  @param {function} reject - Promise rejection callback.
+ */
+function _processVendors(resolve, reject) {
+    // Apply particular options if global settings dictate source files should be referenced inside sourcemaps.
+    var sourcemapOptions = {};
+    if (globalSettings.sourcemapOptions.type === 'External_ReferencedFiles') {
+        sourcemapOptions.includeContent = false;
+        sourcemapOptions.sourceRoot = globalSettings.sourcemapOptions.sourceRoot;
+    }
+
+    // Creating a browserify instance / stream.
+    var bundleStream = browserify({ debug: true });
+
+    // Cycle each of the vendors and push its file into the bundle.
+    // The library will be exposed to other require calls for this packageID.
+    common.vendorLibraries.forEach(function(packageID) {
+        bundleStream.require(nodeResolve.sync(packageID), { expose: packageID });
+    });
+
+    // Adding source file, uglifying then moving to dest folder.
+    bundleStream
+        .bundle()
+        .on('error', function(error) {
+            console.log('Browserify Failed: ' + error.message);
+            reject();
+        })
+        .pipe(source('vendor' + common.buildFileSuffix))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(uglify(common.uglifySettings))
+        .pipe(sourcemaps.write('./', sourcemapOptions))
+        .pipe(gulp.dest(globalSettings.destPath + common.outputFolder))
+        .on('end', function() {
+            console.log('Browserify Completed: vendor' + common.buildFileSuffix);
             resolve();
         });
 }
