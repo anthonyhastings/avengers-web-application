@@ -19,11 +19,6 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     uglify = require('gulp-uglify');
 
-
-// Array of vendor libraries to separate and expose.
-var vendors = ['underscore', 'jquery', 'backbone'];
-
-
 /**
  *  Overall function that will cycle through each of the browserify bundles
  *  and once they're all completed, trigger the completion of the gulp task.
@@ -31,6 +26,15 @@ var vendors = ['underscore', 'jquery', 'backbone'];
  *  @param {object} taskDone - Gulp task callback method.
  */
 gulp.task('scripts', function(taskDone) {
+
+
+
+
+
+
+
+
+
     // Build the vendor bundle.
     if (args.hasOwnProperty('vendors')) {
         // Apply particular options if global settings dictate source files should be referenced inside sourcemaps.
@@ -119,15 +123,11 @@ function _processBundle(resolve, reject) {
         }
     }
 
-
-
-// Cycle each of the vendors and push its file into the bundle.
-// The library will be exposed to other require calls for this packageID.
-vendors.forEach(function(packageID) {
-    bundleStream.external(packageID);
-});
-
-
+    // Cycle each of the vendor libraries that are going to be externalised
+    // to ensure they're not included in this particular bundle.
+    common.vendorLibraries.forEach(function(packageID) {
+        bundleStream.external(packageID);
+    });
 
     // Adding source file, transforming its templates, dealing with sourcemaps, then uglifying.
     bundleStream

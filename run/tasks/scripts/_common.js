@@ -17,6 +17,9 @@ module.exports = {
         { srcPath: './js/src/', fileName: 'main', excludes: [] }
     ],
 
+    // Array of vendor libraries to separate and expose in their own bundle.
+    vendorLibraries: ['underscore', 'jquery', 'backbone'],
+
     // Gets appended to a bundles `fileName` and placed into `outputFolder`.
     buildFileSuffix: '.min.js',
 
