@@ -8,24 +8,16 @@
  */
 
 var gulp = require('gulp'),
+    args = require('yargs').argv,
     common = require('./_common'),
     globalSettings = require('../../_global'),
-    _ = require('underscore');
-
-function _requireJS() {
-    var requirejs = require('requirejs');
-
-    for (var i = 0, length = common.requirejs.bundles.length; i < length; i++) {
-        var thisBuild = common.requirejs.bundles[i],
-            combinedOptions = _.extend({
-                uglify2: common.uglifySettings
-            }, common.requirejs.defaults, thisBuild);
-
-        requirejs.optimize(combinedOptions, function(buildOutput) {
-            console.log(buildOutput);
-        });
-    }
-}
+    nodeResolve = require('resolve'),
+    _ = require('underscore'),
+    browserify = require('browserify'),
+    source = require('vinyl-source-stream'),
+    buffer = require('vinyl-buffer'),
+    sourcemaps = require('gulp-sourcemaps'),
+    uglify = require('gulp-uglify');
 
 /**
  *  Overall function that will cycle through each of the browserify bundles
@@ -33,15 +25,19 @@ function _requireJS() {
  *
  *  @param {object} taskDone - Gulp task callback method.
  */
-function _browserify(taskDone) {
+gulp.task('scripts', function(taskDone) {
     var promises = [];
 
-    for (var index = 0, length = common.browserify.bundles.length; index < length; index++) {
-        var thisBundle = common.browserify.bundles[index],
-            scopedProcessingMethod = _processBrowserifyBundle.bind(thisBundle);
+    if (args.hasOwnProperty('vendors')) {
+        promises.push(new Promise(_processVendors));
+    } else {
+        for (var index = 0, length = common.bundles.length; index < length; index++) {
+            var thisBundle = common.bundles[index],
+                scopedProcessingMethod = _processBundle.bind(thisBundle);
 
-        thisBundle.promise = new Promise(scopedProcessingMethod);
-        promises.push(thisBundle.promise);
+            thisBundle.promise = new Promise(scopedProcessingMethod);
+            promises.push(thisBundle.promise);
+        }
     }
 
     Promise.all(promises).then(
@@ -52,42 +48,32 @@ function _browserify(taskDone) {
             taskDone('Something went wrong.');
         }
     );
-}
+});
 
 /**
- *  Uses Browserify API to create a stream. This is then converted into
- *  a stream that Gulp understands (via `vinyl-source-stream`).
+ *  Uses Browserify API to create a node stream. This is then converted
+ *  into a stream that Gulp understands (via `vinyl-source-stream`).
  *
  *  This is then passed to `vinyl-buffer` where the streams contents are
  *  converted into a Buffer. The inline source map from Browserify is
- *  extracted and added to the stream as another file / save reference
- *  in the exchange object.
+ *  picked up by `gulp-sourcemaps`.
  *
- *  We then filter the stream down to only target the JS file, then uglify
- *  it and generate a sourcempa based on the original data.
+ *  We then uglify the contents of the stream, via `gulp-uglify` which has
+ *  `gulp-sourcemaps` support and updates the original map. The map is then
+ *  saved out to the desired location and the process completes.
  *
  *  @param {function} resolve - Promise resolution callback.
  *  @param {function} reject - Promise rejection callback.
  */
-function _processBrowserifyBundle(resolve, reject) {
-    var browserify = require('browserify'),
-        source = require('vinyl-source-stream'),
-        buffer = require('vinyl-buffer'),
-        extractor = require('gulp-extract-sourcemap'),
-        filter = require('gulp-filter'),
-        uglify = require('gulp-uglifyjs'),
-        self = this;
+function _processBundle(resolve, reject) {
+    var self = this;
 
-    // Make a clone of the uglify settings object so it can be added to.
-    var uglifySourceMapSettings = _.extend({}, common.browserify.uglifySourceMapSettings);
-
-    // Combining uglify defaults with custom options for sourcemapping.
-    var uglifyOptions = _.extend({}, common.uglifySettings, {
-        outSourceMap: true,
-        output: {
-            source_map: uglifySourceMapSettings
-        }
-    });
+    // Apply particular options if global settings dictate source files should be referenced inside sourcemaps.
+    var sourcemapOptions = {};
+    if (globalSettings.sourcemapOptions.type === 'External_ReferencedFiles') {
+        sourcemapOptions.includeContent = false;
+        sourcemapOptions.sourceRoot = globalSettings.sourcemapOptions.sourceRoot;
+    }
 
     // Creating a browserify instance / stream.
     var bundleStream = browserify({ debug: true });
@@ -99,6 +85,12 @@ function _processBrowserifyBundle(resolve, reject) {
         }
     }
 
+    // Cycle each of the vendor libraries that are going to be externalised
+    // to ensure they're not included in this particular bundle.
+    common.vendorLibraries.forEach(function(packageID) {
+        bundleStream.external(packageID);
+    });
+
     // Adding source file, transforming its templates, dealing with sourcemaps, then uglifying.
     bundleStream
         .add(self.srcPath + self.fileName + '.js')
@@ -108,27 +100,56 @@ function _processBrowserifyBundle(resolve, reject) {
             console.log('Browserify Failed: ' + error.message);
             reject();
         })
-        .pipe(source(self.fileName + '.js'))
+        .pipe(source(self.fileName + common.buildFileSuffix))
         .pipe(buffer())
-        .pipe(extractor({
-            removeSourcesContent: true
-        }))
-        .on('postextract', function(sourceMap) {
-            uglifySourceMapSettings.orig = sourceMap;
-        })
-        .pipe(filter('**/*.js'))
-        .pipe(uglify(self.fileName + common.browserify.buildFileSuffix, uglifyOptions))
-        .pipe(gulp.dest(globalSettings.destPath + common.browserify.outputFolder))
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(uglify(common.uglifySettings))
+        .pipe(sourcemaps.write('./', sourcemapOptions))
+        .pipe(gulp.dest(globalSettings.destPath + common.outputFolder))
         .on('end', function() {
             console.log('Browserify Completed: ' + self.srcPath + self.fileName + '.js');
             resolve();
         });
 }
 
-gulp.task('scripts', function(taskDone) {
-    if (globalSettings.moduleFormat === 'requirejs') {
-        _requireJS();
-    } else {
-        _browserify(taskDone);
+/**
+ *  Packages vendor libraries into a single bundle.
+ *
+ *  @param {function} resolve - Promise resolution callback.
+ *  @param {function} reject - Promise rejection callback.
+ */
+function _processVendors(resolve, reject) {
+    // Apply particular options if global settings dictate source files should be referenced inside sourcemaps.
+    var sourcemapOptions = {};
+    if (globalSettings.sourcemapOptions.type === 'External_ReferencedFiles') {
+        sourcemapOptions.includeContent = false;
+        sourcemapOptions.sourceRoot = globalSettings.sourcemapOptions.sourceRoot;
     }
-});
+
+    // Creating a browserify instance / stream.
+    var bundleStream = browserify({ debug: true });
+
+    // Cycle each of the vendors and push its file into the bundle.
+    // The library will be exposed to other require calls for this packageID.
+    common.vendorLibraries.forEach(function(packageID) {
+        bundleStream.require(nodeResolve.sync(packageID), { expose: packageID });
+    });
+
+    // Adding source file, uglifying then moving to dest folder.
+    bundleStream
+        .bundle()
+        .on('error', function(error) {
+            console.log('Browserify Failed: ' + error.message);
+            reject();
+        })
+        .pipe(source('vendor' + common.buildFileSuffix))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(uglify(common.uglifySettings))
+        .pipe(sourcemaps.write('./', sourcemapOptions))
+        .pipe(gulp.dest(globalSettings.destPath + common.outputFolder))
+        .on('end', function() {
+            console.log('Browserify Completed: vendor' + common.buildFileSuffix);
+            resolve();
+        });
+}
