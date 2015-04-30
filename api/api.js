@@ -3,8 +3,14 @@
 // Loading dependencies.
 var _ = require('underscore'),
     express = require('express'),
-    bodyParser = require('body-parser'),
-    data = require('./data.js');
+    bodyParser = require('body-parser');
+
+// Loading all of the locale-specific avenger data.
+var data = {
+    de: require('./data/de'),
+    en: require('./data/en'),
+    fr: require('./data/fr')
+};
 
 // Instantiating the framework and a router for our requests.
 var app = express(),
@@ -28,12 +34,12 @@ router.use(function(request, response, next) {
 });
 
 // Route: Collection endpoint returning all records.
-router.get('/avengers', function(request, response) {
-    var returnData = [];
+router.get('/:locale/avengers', function(request, response) {
+    var relevantDataset = data[request.params.locale],
+        returnData = [];
 
-    data.forEach(function(record) {
-        var subsetRecord = _.pick(record, 'id', 'slug', 'alias', 'gender');
-        returnData.push(subsetRecord);
+    relevantDataset.forEach(function(record) {
+        returnData.push(_.pick(record, 'id', 'slug', 'alias', 'gender'));
     });
 
     setTimeout(function() {
@@ -43,8 +49,9 @@ router.get('/avengers', function(request, response) {
 });
 
 // Route: Model endpoint returning an individual record.
-router.get('/avengers/:slug', function(request, response) {
-    var individualRecord = _.findWhere(data, { slug: request.params.slug });
+router.get('/:locale/avengers/:slug', function(request, response) {
+    var relevantDataset = data[request.params.locale],
+        individualRecord = _.findWhere(relevantDataset, { slug: request.params.slug });
 
     setTimeout(function() {
         response.type('application/json');
