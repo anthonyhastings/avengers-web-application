@@ -44,7 +44,7 @@ module.exports = Backbone.Model.extend({
             response = JSON.parse(response);
         }
 
-        response.image = 'img/' + response.slug + '.jpg';
+        response.image = 'dist/img/' + response.slug + '.jpg';
         return response;
     }
 

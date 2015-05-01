@@ -9,8 +9,16 @@ module.exports = Backbone.Collection.extend({
     // What "blueprint" any objects passed in should be converted into.
     model: AvengersModel,
 
-    // URL to fetch data from. Also used by models to create their endpoint.
-    url: 'http://localhost:4000/api/avengers',
+    /**
+     *  Builds the URL to fetch data from. It is also used by
+     *  the models to create their endpoint.
+     *
+     *  @return {string}
+     */
+    url: function() {
+        var dataStore = require('../utils/dataStore');
+        return 'http://localhost:4000/api/' + dataStore.locale + '/avengers';
+    },
 
     /**
      *  The server will be sending back purposefully malformed JSON as an
