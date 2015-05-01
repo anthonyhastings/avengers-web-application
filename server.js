@@ -34,7 +34,7 @@ router.use(function(request, response, next) {
 });
 
 // Route: Collection endpoint returning all records.
-router.get('/:locale/avengers', function(request, response) {
+router.get('/api/:locale/avengers', function(request, response) {
     var relevantDataset = data[request.params.locale],
         returnData = [];
 
@@ -49,7 +49,7 @@ router.get('/:locale/avengers', function(request, response) {
 });
 
 // Route: Model endpoint returning an individual record.
-router.get('/:locale/avengers/:slug', function(request, response) {
+router.get('/api/:locale/avengers/:slug', function(request, response) {
     var relevantDataset = data[request.params.locale],
         individualRecord = _.findWhere(relevantDataset, { slug: request.params.slug });
 
@@ -59,8 +59,26 @@ router.get('/:locale/avengers/:slug', function(request, response) {
     }, 3000);
 });
 
-// Associate the router with our application, and prefix the routes.
-app.use('/api', router);
+// Route: Homepage with locale.
+router.get('/:locale(en|fr|de)', function(request, response) {
+    response.render ('homepage', { locale: request.params.locale });
+});
+
+// Route: Homepage without locale (redirected).
+router.get('^/$', function(request, response) {
+    response.redirect('/en');
+});
+
+// Hook up the jade view engine to our application.
+app.set('view engine', 'jade');
+app.set('views', './views');
+app.locals.pretty = true;
+
+// Associate the router with our application.
+app.use('/', router);
+
+// Hosting the dist folder as a static directory of files.
+app.use('/dist', express.static('dist'));
 
 // Listen for the above routes on the following port.
 app.listen(apiPort);
