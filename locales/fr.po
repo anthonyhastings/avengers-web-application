@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2015-05-02 02:06:+0000\n"
+"Project-Id-Version: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-05-02 15:39-0000\n"
+"Last-Translator: Anthony Hastings <ar.hastings@gmail.com>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.7.5\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr_FR\n"
+
+#: js/src/templates/detailedView.hbs:4
+msgid "Back to List"
+msgstr "Retour à la liste"
+
+#: js/src/templates/preferencesView.hbs:15
+msgid "Order By:"
+msgstr "Commandé par:"

@@ -12,6 +12,12 @@ var data = {
     fr: require('./data/fr')
 };
 
+// Loading all of the locale-specific translations.
+var translations = {
+    de: require('./locales/de.json'),
+    fr: require('./locales/fr.json')
+};
+
 // Instantiating the framework and a router for our requests.
 var app = express(),
     router = express.Router();
@@ -31,6 +37,16 @@ router.use(function(request, response, next) {
     console.log('Request:', 'GET', request.originalUrl);
     response.header('Access-Control-Allow-Origin', '*');
     next();
+});
+
+// Route: Locale-specific translations.
+router.get('/api/:locale(de|fr)/translations', function(request, response) {
+    var relevantRecord = translations[request.params.locale];
+
+    setTimeout(function() {
+        response.type('application/json');
+        response.send(xssiString + JSON.stringify(relevantRecord));
+    }, 1000);
 });
 
 // Route: Collection endpoint returning all records.
