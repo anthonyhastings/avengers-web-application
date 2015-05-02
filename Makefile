@@ -6,6 +6,7 @@ help:
 	@echo ""
 	@echo "The following commands are available:"
 	@echo ""
+	@echo "\tmake extract-translations - Extract i18n strings from JS/HBS files"
 	@echo "\tmake setup - Installs node dependencies and requisites for build"
 	@echo "\tmake watch - Triggers a watcher via preferred task runner"
 	@echo "\tmake <TASK> - Triggers specified task, e.g. 'make build'"
@@ -17,6 +18,9 @@ help:
 	@echo ""
 
 default: help
+
+extract-translations:
+	node_modules/.bin/jspot extract --keyword=i18n --target=./locales ./js/src/*.js ./js/src/templates/*.hbs;
 
 watch: node_modules
 	$(runner);
