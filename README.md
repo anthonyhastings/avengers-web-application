@@ -7,7 +7,7 @@ This is a learning application that will be enhanced and built upon, to better u
 ## Web Server
 A mock API and server is available via ExpressJS. To run it, simply run the following command:
 
-```node api.js```
+```node server.js```
 
 ## Internationalization
 
