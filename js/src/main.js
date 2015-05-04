@@ -18,5 +18,4 @@ if (document.readyState === 'complete' || document.readyState === 'loaded' || do
  */
 function onDOMContentLoaded() {
     new AppView();
-    Backbone.Events.trigger('changeToList');
 }

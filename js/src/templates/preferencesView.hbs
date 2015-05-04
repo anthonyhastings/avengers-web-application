@@ -12,7 +12,7 @@
 
 {{!-- Cycle each potential order option, ensuring that the current choice is give selected attribute. --}}
 <div class="form-element">
-    <label for="order-by">Order By:</label>
+    <label for="order-by">{{ i18n_gettext 'Order By:' }}</label>
     <select id="order-by" class="dropdown order-by js-order-by">
         {{#each orderOptions}}
             <option value="{{{this}}}" {{#compare this ../orderSelected}}selected{{/compare}}>{{{this}}}</option>

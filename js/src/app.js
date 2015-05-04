@@ -4,6 +4,7 @@
 var Backbone = require('backbone'),
     $ = Backbone.$ = require('jquery'),
     dataStore = require('./utils/dataStore'),
+    i18nHelper = require('./utils/i18n-helper'),
     ListView = require('./views/ListView'),
     DetailedView = require('./views/DetailedView'),
     LoaderView = require('./views/LoaderView');
@@ -24,12 +25,23 @@ module.exports = Backbone.View.extend({
      *  would require views to be changed, and we also instantiate
      *  our static loader view which sits outside the view-changing
      *  logic.
+     *
+     *  Finally we fetch our UI translations and then trigger the
+     *  logic that will save the translations and start the app.
      */
     initialize: function() {
+        var self = this;
+
         this.listenTo(Backbone.Events, 'changeToDetailed', this.onChangeToDetailed);
         this.listenTo(Backbone.Events, 'changeToList', this.onChangeToList);
+
         this.loaderView = new LoaderView({
             el: '.js-avengers-loader'
+        });
+
+        $.when(this._getTranslations(dataStore.locale)).then(function(data) {
+            self._setTranslations(data);
+            Backbone.Events.trigger('changeToList');
         });
     },
 
@@ -142,6 +154,55 @@ module.exports = Backbone.View.extend({
             self.$el.html(self.currentView.render().el);
             self.$el.fadeIn(600);
         });
+    },
+
+    /**
+     *  Retrieves the language files that match the language code.
+     *  Performs an API request for data if necessary.
+     *
+     *  @param {string} langCode - Two-letter language code.
+     *  @return {object} - jQuery promise object.
+     */
+    _getTranslations: function(langCode) {
+        var deferred = $.Deferred();
+
+        if (langCode === 'en') {
+            deferred.resolve();
+        } else if (i18nHelper.store.hasOwnProperty(langCode)) {
+            deferred.resolve(i18nHelper.store[langCode]);
+        } else {
+            $.ajax({
+                method: 'GET',
+                dataType: 'text',
+                url: /api/ + langCode + '/translations',
+                success: function(response) {
+                    if (typeof(response) === 'string') {
+                        response = response.replace(')]}\',', '');
+                    }
+
+                    i18nHelper.store[langCode] = JSON.parse(response);
+                    deferred.resolve(i18nHelper.store[langCode]);
+                }
+            });
+        }
+
+        Backbone.Events.trigger('loader:show');
+
+        return deferred.promise();
+    },
+
+    /**
+     *  Sets the translation object onto the i18nhelper with the
+     *  data that was passed in.
+     *
+     *  @param {object} data - Jed translations object.
+     */
+    _setTranslations: function(data) {
+        if (typeof(data) === 'undefined') {
+            return false;
+        }
+
+        i18nHelper.i18n = new i18nHelper.Jed(data);
     }
 
 });
