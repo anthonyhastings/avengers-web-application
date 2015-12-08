@@ -96,8 +96,8 @@ app.use('/', router);
 // Hosting the dist folder as a static directory of files.
 app.use('/dist', express.static('dist'));
 
-// Listen for the above routes on the following port.
-app.listen(apiPort);
+// Listen for the above routes on the specified port, returning the server instance.
+module.exports = app.listen(apiPort);
 
 // Debugging to the console that the server has started.
 console.log('Mock API Server: http://localhost:' + apiPort + '/');
