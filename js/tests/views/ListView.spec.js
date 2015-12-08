@@ -1,23 +1,28 @@
 // Deps
 var Backbone = require('backbone'),
     $ = Backbone.$ = require('jquery'),
+    i18nHelper = require('../../src/utils/i18n-helper'),
+    AvengersCollection = require('../../src/collections/AvengersCollection'),
     ListView = require('../../src/views/ListView.js');
+
+// Load Handlebars helpers file to associate them to Handlebars namespace.
+require('../../src/utils/handlebarsHelpers');
 
 function todo() {
     assert(false, "Test implementation pending");
 };
 
 function createView() {
-
-    var DummyCollection = Backbone.Collection.extend({});
-
     return new ListView({
-        collection: new DummyCollection([
+        collection: new AvengersCollection([
             {
-                id: 'thor',
+                id: 1,
+                slug: 'thor',
                 alias: 'Thor',
+                gender: 'Male',
                 real_name: 'Thor Odinson',
                 description: 'As the son of Odin and Gaea, Thor’s strength, endurance and resistance to injury are greater than the vast majority of his superhuman race. He is extremely long-lived (though not completely immune to aging), immune to conventional disease and highly resistant to injury. His flesh and bones are several times denser than a human’s. As Lord of Asgard, Thor possessed the Odinforce, which enabled him to tap into the near-infinite resources of cosmic and mystical energies, enhancing all of his abilities. With the vast magical power of the Odinforce, Thor was even able to dent Captain America’s virtually indestructible shield with Mjolnir.',
+                image: 'dist/img/thor.jpg'
             }
         ])
     });
@@ -41,10 +46,10 @@ describe('The List view', function() {
         expect(view.collection.length).to.equal(1);
     });
 
-    it('should create a ul.avengers__list element', function() {
+    it('should create a container element', function() {
         expect(view.el).to.exist;
-        expect(view.el.tagName.toLowerCase()).to.equal('ul');
-        expect(view.el.classList.contains('avengers__list')).to.be.true;
+        expect(view.el.tagName.toLowerCase()).to.equal('div');
+        expect(view.el.classList.contains('avengers__listContainer')).to.be.true;
     });
 
     it('should render list items for each model', function() {
@@ -52,7 +57,7 @@ describe('The List view', function() {
         row = view.$el.find('.js-avenger-row:first');
 
         expect(row).to.be.defined;
-        expect(row.attr('data-model-id')).to.equal('thor');
+        expect(row.attr('data-model-slug')).to.equal('thor');
         expect(row.find('span').text()).to.equal('Thor');
     });
 
