@@ -8,7 +8,7 @@ var AvengersCollection = require('../collections/AvengersCollection'),
 var dataStore = {};
 
 // Determine the current locale from the HTML elements "lang" attribute.
-dataStore.locale = document.querySelector('html').getAttribute('lang');
+dataStore.locale = document.querySelector('html').getAttribute('lang') || 'en';
 
 // Constructing an instance of our collection (but not performing any fetches).
 dataStore.avengers = new AvengersCollection();

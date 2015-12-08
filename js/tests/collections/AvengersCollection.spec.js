@@ -3,7 +3,7 @@ var Backbone = require('backbone'),
     $ = Backbone.$ = require('jquery'),
     AvengersCollection = require('../../src/collections/AvengersCollection'),
     AvengersModel = require('../../src/models/AvengersModel'),
-    rawData = require('../../../api/data');
+    rawData = require('../../../data/en');
 
 describe('The avengers collection', function() {
 
@@ -23,8 +23,7 @@ describe('The avengers collection', function() {
 
     it('should have an api endpoint', function() {
         expect(this.collection.url).to.exist;
-        expect(this.collection.url.length).to.be.above(0);
-        expect(this.collection.url).to.have.string('/api');
+        expect(this.collection.url().length).to.be.above(0);
     });
 
     it('should override sync and set a specific dataType', function() {
@@ -56,7 +55,7 @@ describe('The avengers collection', function() {
             fakeServer = this.sandbox.useFakeServer();
 
         fakeServer.autoRespond = true;
-        fakeServer.respondWith('GET', 'http://localhost:4000/api/avengers', [
+        fakeServer.respondWith('GET', this.collection.url(), [
             200,
             { 'Content-Type': 'application/json; charset=utf-8' },
             ')]}\',[{"id":"thor","alias":"Thor"}]'
