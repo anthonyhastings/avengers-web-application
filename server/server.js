@@ -18,18 +18,20 @@ var translations = {
     fr: require('../locales/fr.json')
 };
 
-// Anti XSSI (Cross-site script inclusion) string.
-var xssiString = ')]}\',';
-
 /**
  * Creates an ExpressJS API server.
  *
  * @param {Number} port - The port to bind the server to.
+ * @param {Boolean} disableXSSI - SuperAgent currently can't handle malformed JSON strings.
  * @return {Object} - Returns the app and the server instance.
  */
-function createServer(port) {
+function createServer(port, disableXSSI) {
+
     // The port which this script will listen to.
-    port = port || 4000;
+    var serverPort = port || 4000;
+
+    // Anti XSSI (Cross-site script inclusion) string.
+    var xssiString = (disableXSSI) ? '' : ')]}\',';
 
     // Instantiating the framework and a router for our requests.
     var app = express(),
@@ -97,12 +99,12 @@ function createServer(port) {
     });
 
     // Debugging to the console that the server has started.
-    console.log('Mock Server: http://localhost:' + port + '/');
+    console.log('Mock Server: http://localhost:' + serverPort + '/');
 
     // Listen for the above routes on the specified port, returning the server instance.
     return {
         app: app,
-        server: app.listen(port)
+        server: app.listen(serverPort)
     };
 }
 
