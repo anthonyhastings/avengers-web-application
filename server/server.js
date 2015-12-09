@@ -104,7 +104,8 @@ function createServer(port, disableXSSI) {
     // Listen for the above routes on the specified port, returning the server instance.
     return {
         app: app,
-        server: app.listen(serverPort)
+        server: app.listen(serverPort),
+        baseUrl: 'http://localhost:' + serverPort
     };
 }
 
