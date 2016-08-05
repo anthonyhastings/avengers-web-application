@@ -4,6 +4,17 @@
 ## Introduction
 This is a learning application that will be enhanced and built upon, to better understand the process of building web applications. It has been built upon the [rehabstudio FE Skeleton](https://github.com/rehabstudio/fe-skeleton) so any specifics about installation or setup can be read from that repositorys documentation.
 
+## Installation
+To run and build the application, simply do the following:
+
+```
+npm install
+make extract-translations
+gulp po2json
+gulp build
+node server/index.js
+```
+
 ## Web Server
 A mock API and server is available via ExpressJS. To run it, simply run the following command:
 
